@@ -1,17 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import Home from "./components/Home";
+import Login from "./components/Login";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+
+  return (
+    <BrowserRouter>
+      {isLoggedIn ? (
+        <Home />
+      ) : (
+        <Login onLogin={() => setIsLoggedIn(true)} />
+      )}
+    </BrowserRouter>
+  );
+};
+
 root.render(
   <React.StrictMode>
-    
-    <BrowserRouter>
-      <Routes>
-        <Route path="/*" element={<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <App />
   </React.StrictMode>
 );
+
