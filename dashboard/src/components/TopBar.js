@@ -1,8 +1,13 @@
 import React from "react";
-
 import Menu from "./Menu";
 
 const TopBar = () => {
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    window.location.reload();
+  };
+
   return (
     <div className="topbar-container">
       <div className="indices-container">
@@ -18,7 +23,10 @@ const TopBar = () => {
         </div>
       </div>
 
-      <Menu />
+      <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <Menu />
+        <button onClick={handleLogout}>Logout</button>
+      </div>
     </div>
   );
 };
