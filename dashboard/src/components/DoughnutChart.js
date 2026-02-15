@@ -1,6 +1,6 @@
-import DoughnutChart from "./DoughnutChart";
 
 import React from "react";
+import DoughnutChart from "./DoughnutChart";
 
 const DoughnutChart = () => {
   return (
