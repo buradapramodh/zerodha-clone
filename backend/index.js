@@ -59,25 +59,37 @@ app.post("/login", async (req, res) => {
 // ================= DATA ROUTES =================
 
 app.get("/allHoldings", async (req, res) => {
-  const allHoldings = await HoldingsModel.find({});
-  res.json(allHoldings);
+  try {
+    const allHoldings = await HoldingsModel.find({});
+    res.json(allHoldings);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching holdings" });
+  }
 });
 
 app.get("/allPositions", async (req, res) => {
-  const allPositions = await PositionsModel.find({});
-  res.json(allPositions);
+  try {
+    const allPositions = await PositionsModel.find({});
+    res.json(allPositions);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching positions" });
+  }
 });
 
 app.post("/newOrder", async (req, res) => {
-  const newOrder = new OrdersModel({
-    name: req.body.name,
-    qty: req.body.qty,
-    price: req.body.price,
-    mode: req.body.mode,
-  });
+  try {
+    const newOrder = new OrdersModel({
+      name: req.body.name,
+      qty: req.body.qty,
+      price: req.body.price,
+      mode: req.body.mode,
+    });
 
-  await newOrder.save();
-  res.json({ message: "Order saved successfully!" });
+    await newOrder.save();
+    res.json({ message: "Order saved successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error saving order" });
+  }
 });
 
 // ================= DATABASE CONNECTION =================
@@ -85,12 +97,12 @@ app.post("/newOrder", async (req, res) => {
 mongoose
   .connect(uri)
   .then(() => {
-    console.log("MongoDB connected");
+    console.log("✅ MongoDB connected successfully");
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.log("MongoDB connection failed", err);
+    console.error("❌ MongoDB connection failed:", err);
   });
