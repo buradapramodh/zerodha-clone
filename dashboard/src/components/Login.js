@@ -1,87 +1,48 @@
-require("dotenv").config();
+import React, { useState } from "react";
+import axios from "axios";
 
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const Login = ({ onLogin }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-const { HoldingsModel } = require("./model/HoldingsModel");
-const { PositionsModel } = require("./model/PositionsModel");
-const { OrdersModel } = require("./model/OrdersModel");
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        "https://zerodha-backend2.onrender.com/login",
+        { username, password }
+      );
 
-const app = express();
+      alert(res.data.message);
+      localStorage.setItem("isLoggedIn", "true");
+      onLogin();
+    } catch (error) {
+      alert("Invalid username or password");
+    }
+  };
 
-// ================= MIDDLEWARE =================
-app.use(cors());
-app.use(bodyParser.json());
+  return (
+    <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <h2>Login</h2>
 
-// ================= ENV =================
-const PORT = process.env.PORT || 3000;
-const uri = process.env.MONGO_URL;
+      <input
+        type="text"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <br /><br />
 
-// ================= LOGIN ROUTE =================
-// 🔥 SIMPLE DEMO LOGIN (no JWT, no DB)
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <br /><br />
 
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+      <button onClick={handleLogin}>Login</button>
+    </div>
+  );
+};
 
-  if (username === "admin" && password === "admin123") {
-    return res.json({ message: "Login successful!" });
-  } else {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
-});
-
-// ================= API ROUTES =================
-
-// Get All Holdings
-app.get("/allHoldings", async (req, res) => {
-  try {
-    const allHoldings = await HoldingsModel.find({});
-    res.json(allHoldings);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching holdings" });
-  }
-});
-
-// Get All Positions
-app.get("/allPositions", async (req, res) => {
-  try {
-    const allPositions = await PositionsModel.find({});
-    res.json(allPositions);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching positions" });
-  }
-});
-
-// Create New Order
-app.post("/newOrder", async (req, res) => {
-  try {
-    const newOrder = new OrdersModel({
-      name: req.body.name,
-      qty: req.body.qty,
-      price: req.body.price,
-      mode: req.body.mode,
-    });
-
-    await newOrder.save();
-    res.status(201).json({ message: "Order saved successfully!" });
-  } catch (error) {
-    res.status(500).json({ message: "Error saving order" });
-  }
-});
-
-// ================= DATABASE CONNECTION =================
-
-mongoose
-  .connect(uri)
-  .then(() => {
-    console.log("✅ MongoDB connected successfully");
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err);
-  });
+export default Login;
